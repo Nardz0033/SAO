@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowDown, ArrowRight, Bell, CalendarDays, Check, ChevronDown, FileText, LockKeyhole, MessageSquareText, ShieldCheck, Sparkles, Users } from 'lucide-react'
@@ -12,6 +13,11 @@ const demoAnnouncements = [
 ]
 
 export function Landing() {
+ const [currentTime, setCurrentTime] = useState(() => new Date())
+ useEffect(() => {
+  const interval = window.setInterval(() => setCurrentTime(new Date()), 1000)
+  return () => window.clearInterval(interval)
+ }, [])
  return <main>
   <section className="hero"><div className="hero-grid"/><div className="container hero-content"><motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{duration:.55}} className="hero-copy">
    <div className="eyebrow"><span className="eyebrow-dot"/> YOUR STUDENT AFFAIRS, CONNECTED</div>
@@ -22,7 +28,7 @@ export function Landing() {
   </motion.div><motion.div initial={{opacity:0,scale:.96,y:12}} animate={{opacity:1,scale:1,y:0}} transition={{duration:.65,delay:.12}} className="hero-art" aria-label="Illustration of the student services dashboard">
     <div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="hero-glow"/>
     <div className="floating-note note-left"><span className="note-icon mint"><Check size={16}/></span><span><b>Request received</b><small>Your next step is clear</small></span></div>
-    <div className="dashboard-card"><div className="dash-top"><span className="dash-dot"/><span className="dash-dot"/><span className="dash-dot"/><div className="dash-top-label">YOUR STUDENT HUB</div></div><div className="dash-greeting"><small>MONDAY, OCTOBER 12</small><h3>Good morning, Alex <span>✦</span></h3><p>What can we help you with today?</p></div><div className="dash-actions"><div className="dash-action active"><span className="mini-icon blue"><MessageSquareText size={16}/></span><span><b>Submit a request</b><small>Get help from our team</small></span><ArrowRight size={14}/></div><div className="dash-action"><span className="mini-icon coral"><CalendarDays size={16}/></span><span><b>Book an appointment</b><small>Find a time that works</small></span><ArrowRight size={14}/></div></div><div className="dash-bottom"><span><i className="status-pulse"/> Everything in one place</span><span className="dash-shield"><LockKeyhole size={12}/> private</span></div></div>
+    <div className="dashboard-card"><div className="dash-top"><span className="dash-dot"/><span className="dash-dot"/><span className="dash-dot"/><div className="dash-top-label">YOUR STUDENT HUB</div></div><div className="dash-greeting"><small><time dateTime={currentTime.toISOString()}>{currentTime.toLocaleString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit' })}</time></small><h3>Hello, Students <span>✦</span></h3><p>What can we help you with today?</p></div><div className="dash-actions"><div className="dash-action active"><span className="mini-icon blue"><MessageSquareText size={16}/></span><span><b>Submit a request</b><small>Get help from our team</small></span><ArrowRight size={14}/></div><div className="dash-action"><span className="mini-icon coral"><CalendarDays size={16}/></span><span><b>Book an appointment</b><small>Find a time that works</small></span><ArrowRight size={14}/></div></div><div className="dash-bottom"><span><i className="status-pulse"/> Everything in one place</span><span className="dash-shield"><LockKeyhole size={12}/> private</span></div></div>
     <div className="floating-note note-right"><span className="note-icon peach"><CalendarDays size={16}/></span><span><b>Your campus, closer</b><small>Events · Updates · Support</small></span></div>
    </motion.div></div><a className="scroll-cue" href="#services"><span>SCROLL TO EXPLORE</span><ArrowDown size={14}/></a></section>
   <section className="proof-strip"><div className="container proof-inner"><span>ONE SIMPLE PLACE FOR</span><div><MessageSquareText size={16}/> Student support</div><div><CalendarDays size={16}/> Appointments</div><div><Sparkles size={16}/> Campus life</div><div><Bell size={16}/> Office updates</div></div></section>

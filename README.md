@@ -34,7 +34,7 @@ Private request attachments are stored in a private bucket. Their metadata refer
 1. Install Node.js 22 or newer and npm.
 2. Create a Supabase project. In **Project Settings → API**, copy the project URL and publishable key (sometimes labeled `anon` on older projects).
 3. Copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. Never add a service-role or secret key to a `VITE_` variable.
-4. Apply `supabase/migrations/20261009000000_saoconnect_core.sql` using the Supabase CLI after linking the project, or paste it into the Supabase SQL Editor as the project owner. The local Supabase CLI was not available when this project was prepared; the migration file is provided directly.
+4. Apply every SQL file in `supabase/migrations/` in timestamp order using the Supabase CLI after linking the project, or paste each file into the Supabase SQL Editor as the project owner.
 5. In Supabase Auth settings, enable email confirmations and set the site URL and redirect URLs for local development and deployment.
 6. Install dependencies and run the client:
 
@@ -60,7 +60,7 @@ Replace the placeholder with the verified account UUID. Never expose this SQL op
 ## Security notes
 
 - RLS is enabled for every application table in `public`; policies scope student-owned requests, appointments, registrations, notifications, feedback, and attachments.
-- Staff access to private requests is limited to assigned records; admins can review and assign records. Role checks use the database role table, not user-editable metadata.
+- Staff can review unassigned requests and claim them; staff can update requests assigned to them. Administrators can review all requests and assign them to staff. These actions are guarded by database RLS policies. Role checks use the database role table, not user-editable metadata.
 - The appointment table has a PostgreSQL exclusion constraint that rejects overlapping active appointments for the same staff member.
 - Event registration locks the event row while checking capacity to prevent overbooking.
 - Supabase Storage is private. Students can access their own UID folder; staff can read files only for assigned requests and administrators can read authorized service records. Signed URL generation is not yet wired into the interface.
@@ -81,7 +81,7 @@ Replace the placeholder with the verified account UUID. Never expose this SQL op
 
 This is a functional foundation, not a complete university deployment. No Supabase project credentials were provided, so the database migration could not be applied to a live project and live authentication/data could not be exercised here.
 
-- Staff/admin record-management workflows are not all present yet. Dedicated request assignment/status controls, role management, appointment scheduling/availability management, event editing/cancellation, feedback reporting, audit-log generation, CSV export, and system settings still need UI and trusted server-side implementation.
+- Staff/admin record-management workflows are not all present yet. Role management, appointment scheduling/availability management, event editing/cancellation, feedback reporting, audit-log generation, CSV export, and system settings still need UI and trusted server-side implementation.
 - Student request attachments are represented in the schema and private bucket but upload, metadata validation on a trusted boundary, and signed-URL retrieval are not wired into the form.
 - Appointment booking reads availability and writes a request; the database overlap constraint is in place, but actual Supabase migration execution is required before it can provide enforcement.
 - Request status notifications and the student notification center are connected. Appointment reminders, announcement notifications, event messages, and email/push delivery still need separate triggers or delivery providers.
