@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowDown, ArrowRight, Bell, CalendarDays, Check, ChevronDown, FileText, LockKeyhole, MessageSquareText, ShieldCheck, Sparkles, Users } from 'lucide-react'
+import { ArrowDown, ArrowRight, ArrowUpRight, Bell, CalendarDays, Check, ChevronDown, FileText, LockKeyhole, MessageSquareText, ShieldCheck, Sparkles, Users } from 'lucide-react'
 const services = [
   { icon: FileText, title: 'Student requests', text: 'Submit a concern or request and follow every update in one place.', tag: 'Clear updates' },
   { icon: CalendarDays, title: 'Appointments', text: 'Find an available time with Student Affairs and book online.', tag: 'Easy booking' },
@@ -19,7 +19,7 @@ export function Landing() {
    <div className="eyebrow"><span className="eyebrow-dot"/> CTU DAANBANTAYAN CAMPUS · STUDENT AFFAIRS</div>
    <h1>Support for your<br/><span>campus life.</span></h1>
    <p className="hero-lede">Connect with the Student Affairs Office at CTU Daanbantayan Campus, track your requests, book appointments, and keep up with campus activities.</p>
-   <div className="hero-buttons"><Link className="btn btn-primary btn-large" to="/register">Get started <ArrowRight size={17}/></Link><a className="btn btn-outline btn-large" href="#how">See how it works <ArrowDown size={16}/></a></div>
+   <div className="hero-buttons"><Link className="btn btn-primary btn-large" to="/register">Get started <ArrowRight size={17}/></Link><a className="btn btn-outline btn-large" href="#how">See how it works <ArrowDown size={16}/></a><a className="text-link hero-contact-link" href="https://web.facebook.com/ctudaanbantayansao" target="_blank" rel="noopener noreferrer">Contact Student Affairs <ArrowUpRight size={15}/></a></div>
    <div className="trust-line"><span className="trust-icon"><ShieldCheck size={16}/></span><span>Your information stays private and secure</span><span className="trust-sep">·</span><span>Made for students</span></div>
   </motion.div><motion.div initial={{opacity:0,scale:.96,y:12}} animate={{opacity:1,scale:1,y:0}} transition={{duration:.65,delay:.12}} className="hero-art" aria-label="Illustration of the student services dashboard">
     <div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="hero-glow"/>
