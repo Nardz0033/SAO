@@ -1,5 +1,4 @@
 {
-  "$schema": "https://vercel.sh/vercel.json",
   "rewrites": [
     {
     
