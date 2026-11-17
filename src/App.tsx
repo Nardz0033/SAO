@@ -23,8 +23,8 @@ function Shell() {
     {notice && <div className="toast" role="status">{notice}<button onClick={() => setNotice('')} aria-label="Dismiss"><X size={16}/></button></div>}
     <header className={`topbar${location.pathname.startsWith('/student') || location.pathname.startsWith('/staff') || location.pathname.startsWith('/admin') ? ' topbar-workspace' : ''}`}><div className="topbar-inner">
       <Link to="/" className="brand"><img className="brand-logo" src="/sao-logo.png" alt="SAO Student Affairs Office"/><span className="brand-copy"><span className="brand-connect">Connect</span><small className="brand-campus">CTU DAANBANTAYAN CAMPUS</small></span></Link>
-      <button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">{menuOpen ? <X/> : <Menu/>}</button>
-      <nav className={menuOpen ? 'nav-links open' : 'nav-links'} aria-label="Main navigation">
+      <button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation" aria-expanded={menuOpen} aria-controls="main-navigation">{menuOpen ? <X/> : <Menu/>}</button>
+      <nav id="main-navigation" className={menuOpen ? 'nav-links open' : 'nav-links'} aria-label="Main navigation">
         <a href="/#services">Services</a><a href="/#announcements">Updates</a><a href="/#how">How it works</a><Link to="/help">Help center</Link>
       </nav>
       <div className="top-actions">{session ? <><Link to={role === 'student' ? '/student/dashboard' : `/${role === 'super_admin' ? 'admin' : role}/dashboard`} className="btn btn-quiet">My workspace <ArrowRight size={15}/></Link><button className="avatar" title="Sign out" onClick={signOut}>{profile?.full_name?.[0]?.toUpperCase() || 'U'}</button></> : <><Link to="/login" className="btn btn-quiet">Log in</Link><Link to="/register" className="btn btn-primary">Get started <ArrowUpRight size={16}/></Link></>}</div>

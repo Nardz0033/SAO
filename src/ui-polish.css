@@ -124,6 +124,49 @@
   outline-offset: 2px;
 }
 
+/* Readable type and predictable controls across screen sizes. */
+body { font-size: 16px; line-height: 1.55; }
+.btn { min-height: 44px; font-size: 14px; }
+.btn-small { min-height: 40px; font-size: 13px; }
+.nav-links { font-size: 14px; }
+.hero-lede, .section-heading > p, .how-intro > p,
+.simple-card p, .simple-card ol { font-size: 15px; line-height: 1.7; }
+.service-card p, .announcement-body p, .faq-list details p { font-size: 14px; line-height: 1.65; }
+.service-card h3, .announcement-body h3 { font-size: 17px; }
+.faq-list summary { font-size: 15px; }
+.footer-brand > p, .footer-col, .footer-contact p { font-size: 13px; line-height: 1.65; }
+.footer-contact small { font-size: 12px; }
+.auth-heading p { font-size: 14px; }
+.auth-form label, .request-form label { font-size: 13px; }
+.auth-form input, .request-form input, .request-form select, .request-form textarea { font-size: 16px; min-height: 44px; }
+.auth-switch, .forgot-link, .config-callout, .form-error { font-size: 13px; }
+.workspace-top h1 { font-size: clamp(22px, 2.4vw, 28px); }
+.crumb { font-size: 11px; }
+.welcome-kicker, .side-label { font-size: 10px; }
+.welcome-banner h2 { font-size: 22px; }
+.welcome-banner p, .stat-label, .stat-card > small,
+.request-info small, .request-info b, .quick-link b,
+.quick-link small, .compact-update b, .compact-update small,
+.announcement-row small, .announcement-row h3, .announcement-row p,
+.empty-state h3, .empty-state p, .event-card p,
+.side-links button, .side-user b, .side-user small,
+.request-workflow-heading small, .request-workflow-heading h3,
+.request-workflow-description, .request-assignee,
+.request-workflow-form label, .request-workflow-form input,
+.request-workflow-form select { font-size: 13px; }
+.side-links button { min-height: 44px; }
+.icon-button, .avatar, .mobile-menu { min-width: 44px; min-height: 44px; }
+.workspace-signout { display: none; }
+
+@media (max-width: 950px) and (min-width: 701px) {
+  .workspace-container { grid-template-columns: 176px minmax(0, 1fr); gap: 14px; }
+  .side-nav { padding-inline: 8px; }
+  .side-links button { padding-inline: 7px; }
+  .welcome-banner { padding: 22px; }
+  .welcome-art { margin-right: 8px; }
+  .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 .password-control { position: relative; display: flex; align-items: center; }
 .password-control input { width: 100%; padding-right: 48px; }
 .password-toggle {
@@ -144,9 +187,29 @@
 .password-toggle svg { width: 18px; height: 18px; }
 
 @media (max-width: 700px) {
+  .topbar-inner { padding-inline: 14px; }
+  .mobile-menu { order: 3; }
+  .nav-links.open { padding: 16px 22px 20px; }
+  .nav-links a { min-height: 44px; display: flex; align-items: center; font-size: 15px; }
+  .top-actions .btn { min-height: 44px; font-size: 13px; }
+  .hero h1 { font-size: clamp(36px, 10vw, 44px); }
+  .hero-lede { font-size: 15px; }
+  .section-heading h2, .how-intro h2, .faq-layout h2 { font-size: 30px; }
+  .service-card p, .announcement-body p, .faq-list details p { font-size: 14px; }
+  .side-links button { min-height: 56px; min-width: 72px; font-size: 11px; }
+  .workspace-signout { display: grid; }
+  .workspace-top-actions { gap: 7px; }
+  .workspace-top h1 { font-size: 21px; }
+  .welcome-banner h2 { font-size: 19px; }
+  .welcome-banner p { font-size: 14px; }
+  .stat-label, .stat-card > small, .request-info small,
+  .quick-link small, .compact-update small { font-size: 12px; }
+  .request-info b, .quick-link b, .compact-update b { font-size: 14px; }
+  .status-pill { font-size: 11px; }
+  .workspace-container { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
   .welcome-banner.student-welcome { min-height: 0; padding: 19px; }
   .welcome-actions { gap: 10px; margin-top: 13px; }
-  .welcome-actions .btn { padding: 9px 12px; font-size: 10px; }
+  .welcome-actions .btn { padding: 9px 12px; font-size: 13px; }
   .welcome-banner p { max-width: 100%; }
   .hero-art { height: 335px; min-height: 0; transform: none; margin: 4px 0 0; }
   .dashboard-card { width: min(100%, 358px); }
