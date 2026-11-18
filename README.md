@@ -32,18 +32,34 @@ Private request attachments are stored in a private bucket. Their metadata refer
 ## Local setup
 
 1. Install Node.js 22 or newer and npm.
-2. Create a Supabase project. In **Project Settings → API**, copy the project URL and publishable key (sometimes labeled `anon` on older projects).
-3. Copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. Never add a service-role or secret key to a `VITE_` variable.
-4. Apply every SQL file in `supabase/migrations/` in timestamp order using the Supabase CLI after linking the project, or paste each file into the Supabase SQL Editor as the project owner.
-5. In Supabase Auth settings, enable email confirmations and set the site URL and redirect URLs for local development and deployment.
-6. Install dependencies and run the client:
+2. Install and start Docker Desktop. The local Supabase stack runs in Docker.
+3. Install dependencies and start the local Supabase stack from the project folder:
 
    ```sh
    npm install
+   npx supabase start
+   ```
+
+   The first start downloads the local Supabase services. The migrations in `supabase/migrations/` are applied to the local database, and Auth emails are captured by Mailpit instead of being sent. If your local database was already running before you added migrations, run `npx supabase db reset` to recreate it and apply them.
+
+4. Run `npx supabase status` and copy the local **API URL** and **publishable (or anon) key** into a `.env.local` file in the project root:
+
+   ```dotenv
+   VITE_SUPABASE_URL=http://127.0.0.1:54321
+   VITE_SUPABASE_PUBLISHABLE_KEY=<local-publishable-or-anon-key-from-supabase-status>
+   ```
+
+   `.env.local` is ignored by Git. Never put a service-role or secret key in a `VITE_` variable. Keep the existing `.env` values if you still use the hosted project; Vite gives `.env.local` precedence for local development.
+
+5. Start the client and open the local Mailpit inbox:
+
+   ```sh
    npm run dev
    ```
 
-7. Create a student account using `/register`. Confirm the verification email before signing in. Development email delivery may use Supabase's built-in mail service; configure a custom SMTP provider for reliable university use.
+   Open the Vite URL shown in the terminal (normally `http://localhost:5173`), register at `/register`, then open [http://127.0.0.1:54324](http://127.0.0.1:54324) to view the confirmation email and click its link. Local Auth has no project-wide hourly email limit.
+
+To switch back to the hosted Supabase project, temporarily rename or remove `.env.local`, then restart Vite. For the hosted project, copy `.env.example` to `.env` and use that project's URL and publishable key.
 
 ## First administrator
 
