@@ -16,7 +16,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSession(current)
     if (current?.user) {
       const [p, r] = await Promise.all([
-        supabase.from('profiles').select('id,full_name,email,department,program').eq('id', current.user.id).maybeSingle(),
+        supabase.from('profiles').select('*').eq('id', current.user.id).maybeSingle(),
         supabase.from('user_roles').select('role').eq('user_id', current.user.id),
       ])
       setProfile(p.data as Profile | null)

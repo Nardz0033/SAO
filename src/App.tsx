@@ -1,8 +1,9 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import { ArrowRight, ArrowUpRight, HeartHandshake, LockKeyhole, Menu, X } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, HeartHandshake, LockKeyhole, Menu, X, UserRound, Settings, LogOut, Camera, ChevronDown } from 'lucide-react'
 import { AuthProvider, useAuth } from './lib/auth'
 import { supabase } from './lib/supabase'
+import { ProfileEditor } from './components/ProfileEditor'
 
 const Landing = lazy(() => import('./components/Landing').then(module => ({ default: module.Landing })))
 const AuthPage = lazy(() => import('./components/AuthPages').then(module => ({ default: module.AuthPage })))
@@ -11,12 +12,24 @@ const Workspace = lazy(() => import('./components/Workspace').then(module => ({ 
 
 function App() { return <AuthProvider><Shell /></AuthProvider> }
 function Shell() {
-  const { session, profile, roles, loading } = useAuth()
+  const { session, profile, roles, loading, refresh } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
   const [notice, setNotice] = useState('')
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState('')
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false)
+  const [profileEditorOpen, setProfileEditorOpen] = useState(false)
+  const profileMenuRef = useRef<HTMLDivElement>(null)
   const location = useLocation(); const navigate = useNavigate()
   const role = roles.includes('super_admin') ? 'super_admin' : roles.includes('admin') ? 'admin' : roles.includes('staff') ? 'staff' : 'student'
   useEffect(() => { setMenuOpen(false) }, [location.pathname])
+  useEffect(() => {
+    if (!profileMenuOpen) return
+    const outside = (event: PointerEvent) => { if (!profileMenuRef.current?.contains(event.target as Node)) setProfileMenuOpen(false) }
+    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setProfileMenuOpen(false) }
+    document.addEventListener('pointerdown', outside); document.addEventListener('keydown', escape)
+    return () => { document.removeEventListener('pointerdown', outside); document.removeEventListener('keydown', escape) }
+  }, [profileMenuOpen])
+  useEffect(() => { let active = true; if (!supabase || !profile?.avatar_path) { setProfilePhotoUrl(''); return () => { active = false } } void supabase.storage.from('profile-photos').createSignedUrl(profile.avatar_path, 3600).then(({ data, error }) => { if (active) setProfilePhotoUrl(error ? '' : data?.signedUrl || '') }); return () => { active = false } }, [profile?.avatar_path])
   async function signOut() { await supabase?.auth.signOut(); navigate('/') }
   if (loading) return <div className="loading-screen"><img className="brand-logo" src="/sao-logo.png" alt="SAO Student Affairs Office"/><div className="loader"/><span>Preparing your space</span></div>
   return <>
@@ -27,7 +40,7 @@ function Shell() {
       <nav id="main-navigation" className={menuOpen ? 'nav-links open' : 'nav-links'} aria-label="Main navigation">
         <a href="/#services">Services</a><a href="/#announcements">Updates</a><a href="/#how">How it works</a><Link to="/help">Help center</Link>
       </nav>
-      <div className="top-actions">{session ? <><Link to={role === 'student' ? '/student/dashboard' : `/${role === 'super_admin' ? 'admin' : role}/dashboard`} className="btn btn-quiet">My workspace <ArrowRight size={15}/></Link><button className="avatar" title="Sign out" onClick={signOut}>{profile?.full_name?.[0]?.toUpperCase() || 'U'}</button></> : <><Link to="/login" className="btn btn-quiet">Log in</Link><Link to="/register" className="btn btn-primary">Get started <ArrowUpRight size={16}/></Link></>}</div>
+      <div className="top-actions">{session ? <><Link to={role === 'student' ? '/student/dashboard' : `/${role === 'super_admin' ? 'admin' : role}/dashboard`} className="btn btn-quiet">My workspace <ArrowRight size={15}/></Link><div className="profile-menu-wrap" ref={profileMenuRef}><button className="avatar" title="Open profile menu" aria-label="Open profile menu" aria-expanded={profileMenuOpen} onClick={()=>setProfileMenuOpen(value=>!value)}>{profilePhotoUrl?<img src={profilePhotoUrl} alt=""/>:profile?.full_name?.[0]?.toUpperCase() || 'U'}<ChevronDown size={12} className="avatar-chevron"/></button>{profileMenuOpen&&<div className="profile-dropdown" role="menu"><div className="profile-dropdown-user"><b>{profile?.full_name||'SAO Connect user'}</b><small>{profile?.email||session.user.email}</small></div><button role="menuitem" onClick={()=>{setProfileMenuOpen(false);setProfileEditorOpen(true)}}><UserRound size={16}/>View Profile</button><button role="menuitem" onClick={()=>{setProfileMenuOpen(false);setProfileEditorOpen(true)}}><Camera size={16}/>Edit Profile</button><button role="menuitem" onClick={()=>{setProfileMenuOpen(false);navigate('/reset-password')}}><Settings size={16}/>Account Settings</button><button role="menuitem" className="profile-logout" onClick={()=>void signOut()}><LogOut size={16}/>Logout</button></div>}</div></> : <><Link to="/login" className="btn btn-quiet">Log in</Link><Link to="/register" className="btn btn-primary">Get started <ArrowUpRight size={16}/></Link></>}</div>
     </div></header>
     <Suspense fallback={<div className="loading-screen"><div className="loader"/><span>Loading your workspace</span></div>}><Routes>
       <Route path="/" element={<Landing/>}/>
@@ -38,6 +51,7 @@ function Shell() {
       <Route path="/admin/*" element={<Protected role="admin"><Workspace role="admin" notify={setNotice}/></Protected>}/>
       <Route path="*" element={<NotFound/>}/>
     </Routes></Suspense>
+    {profileEditorOpen&&profile&&session&&<ProfileEditor profile={profile} accountEmail={session.user.email||profile.email} close={()=>setProfileEditorOpen(false)} onSaved={async()=>{await refresh();setProfileEditorOpen(false);setNotice('Your profile has been updated.')}}/>}
     <Footer workspace={location.pathname.startsWith('/student') || location.pathname.startsWith('/staff') || location.pathname.startsWith('/admin')}/>
   </>
 }

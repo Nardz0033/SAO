@@ -7,7 +7,7 @@ export const isSupabaseConfigured = Boolean(url && key)
 export const supabase = isSupabaseConfigured ? createClient(url!, key!) : null
 
 export type AppRole = 'student' | 'staff' | 'admin' | 'super_admin'
-export type Profile = { id: string; full_name: string; email: string; department: string | null; program: string | null }
+export type Profile = { id: string; full_name: string; email: string; department: string | null; program: string | null; avatar_path: string | null; student_number: string | null; first_name: string | null; middle_name: string | null; last_name: string | null; contact_number: string | null; year_level: string | null; section: string | null; gender: string | null }
 export type ServiceRequest = {
   id: string; reference_number: string; subject: string; description: string; status: string;
   submitted_at: string; student_visible_note: string | null; service_categories?: { name: string } | null
