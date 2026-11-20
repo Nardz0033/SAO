@@ -10,7 +10,7 @@ type Values = {
   photoFile: File | null; removePhoto: boolean
 }
 
-export function ProfileEditor({ profile, accountEmail, close, onSaved }: { profile: Profile; accountEmail: string; close: () => void; onSaved: () => Promise<void> }) {
+export function ProfileEditor({ profile, accountEmail, close, onSaved, mode = 'edit' }: { profile: Profile; accountEmail: string; close: () => void; onSaved: () => Promise<void>; mode?: 'view' | 'edit' }) {
   const [values, setValues] = useState<Values>({
     first_name: profile.first_name || profile.full_name.split(' ')[0] || '', middle_name: profile.middle_name || '',
     last_name: profile.last_name || profile.full_name.split(' ').slice(1).join(' '), student_number: profile.student_number || '',
@@ -23,7 +23,7 @@ export function ProfileEditor({ profile, accountEmail, close, onSaved }: { profi
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
-  const dirty = JSON.stringify(values) !== JSON.stringify(initial.current)
+  const dirty = mode === 'edit' && JSON.stringify(values) !== JSON.stringify(initial.current)
 
   useEffect(() => {
     let active = true
@@ -91,11 +91,14 @@ export function ProfileEditor({ profile, accountEmail, close, onSaved }: { profi
 
   const textField = (key: keyof Values, label: string, required = false, type = 'text') => <label className="profile-field" key={key}>{label}{required && <span> *</span>}<input type={type} required={required} value={String(values[key] || '')} onChange={event => update(key, event.target.value)}/></label>
   return <div className="modal-scrim profile-editor-scrim" onMouseDown={event => { if (event.target === event.currentTarget) dismiss() }}><section className="profile-editor" role="dialog" aria-modal="true" aria-labelledby="profile-editor-title">
-    <header className="profile-editor-head"><div><span className="eyebrow eyebrow-muted">YOUR ACCOUNT</span><h2 id="profile-editor-title">Edit profile</h2><p>Keep your student information up to date.</p></div><button className="modal-close" aria-label="Close profile editor" onClick={dismiss}><X/></button></header>
+    <header className="profile-editor-head"><div><span className="eyebrow eyebrow-muted">YOUR ACCOUNT</span><h2 id="profile-editor-title">{mode === 'view' ? 'Your profile' : 'Edit profile'}</h2><p>{mode === 'view' ? 'Your saved student information.' : 'Keep your student information up to date.'}</p></div><button className="modal-close" aria-label="Close profile" onClick={dismiss}><X/></button></header>
+    {mode === 'view' ? <div className="profile-editor-body"><div className="profile-photo-field"><div className="profile-photo-preview">{photo ? <img src={photo} alt="Profile"/> : profile.full_name[0]?.toUpperCase()}</div><div className="profile-photo-controls"><b>Profile picture</b></div></div><div className="profile-fields-grid">{[
+      ['Full name', profile.full_name], ['Student ID', profile.student_number], ['Email address', accountEmail], ['Contact number', profile.contact_number], ['Course / Program', profile.program], ['Department', profile.department], ['Year level', profile.year_level], ['Section', profile.section], ['Gender', profile.gender],
+    ].map(([label, value]) => <div className="profile-field" key={label}><span>{label}</span><div>{value || 'Not provided'}</div></div>)}</div><footer className="profile-editor-actions"><button type="button" className="btn btn-outline" onClick={close}>Close</button></footer></div> :
     <form onSubmit={submit}><div className="profile-editor-body">
       <div className="profile-photo-field"><div className="profile-photo-preview">{photo && !values.removePhoto ? <img src={photo} alt="Profile preview"/> : values.removePhoto ? (values.first_name[0] || 'U').toUpperCase() : profile.full_name[0]?.toUpperCase()}</div><div className="profile-photo-controls"><b>Profile picture</b><small>JPG, PNG or WEBP · up to 5 MB</small><div><label className="btn btn-outline btn-small profile-photo-choose"><Camera size={15}/>{values.photoFile ? 'Change picture' : 'Upload picture'}<input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={event => selectPhoto(event.target.files?.[0])}/></label>{(photo || profile.avatar_path) && <button type="button" className="profile-photo-remove" onClick={() => { update('photoFile', null); update('removePhoto', true); setPhoto('') }}>Remove</button>}</div></div></div>
       <div className="profile-fields-grid">{textField('first_name', 'First name', true)}{textField('middle_name', 'Middle name')}{textField('last_name', 'Last name', true)}{textField('student_number', 'Student ID', true)}{textField('email', 'Email address', true, 'email')}{textField('contact_number', 'Contact number', false, 'tel')}{textField('program', 'Course / Program')}{textField('year_level', 'Year level')}{textField('section', 'Section')}<label className="profile-field">Gender<select value={values.gender} onChange={event => update('gender', event.target.value)}><option value="">Prefer not to say</option><option>Female</option><option>Male</option><option>Non-binary</option><option>Self-describe</option></select></label></div>
       {error && <p className="profile-editor-error" role="alert">{error}</p>}
-    </div><footer className="profile-editor-actions"><button type="button" className="btn btn-outline" onClick={dismiss} disabled={busy}>Cancel</button><button className="btn btn-primary" disabled={busy}>{busy ? 'Saving…' : 'Save changes'}</button></footer></form>
+    </div><footer className="profile-editor-actions"><button type="button" className="btn btn-outline" onClick={dismiss} disabled={busy}>Cancel</button><button className="btn btn-primary" disabled={busy}>{busy ? 'Saving…' : 'Save changes'}</button></footer></form>}
   </section></div>
 }
